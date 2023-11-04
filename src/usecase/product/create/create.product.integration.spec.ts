@@ -1,18 +1,15 @@
-
 import { Sequelize } from "sequelize-typescript";
 import Product from "../../../domain/product/entity/product";
 import ProductModel from "../../../infrastructure/product/repository/sequelize/product.model";
 import ProductRepository from "../../../infrastructure/product/repository/sequelize/product.repository";
-import { InputUpdateProductDto, OutputUpdateProductDto } from "./update.product.dto";
-import UpdateProductUseCase from "./update.product.usecase";
-
-
-const input: InputUpdateProductDto = {
-  id:"123",
-  name: "test updated",
-  price: 124
+import { InputCreateProductDto, OutputCreateProductDto } from "./create.product.dto";
+import CreateProductUseCase from "./create.product.usecase";
+const input: InputCreateProductDto = {
+  name: "test",
+  price: 123
 }
-describe("Test for integration find product", () => {
+
+describe("Test for integration create product", () => {
   let sequelize: Sequelize
   beforeEach(async () => {
     sequelize = new Sequelize({
@@ -30,13 +27,15 @@ describe("Test for integration find product", () => {
     await sequelize.close()
   })
 
-  it("test update product",async ()=> {
+  it("test create product",async ()=> {
     const productRepository = new ProductRepository()
-    const product = new Product("123","test",123)
-    const usecase = new UpdateProductUseCase(productRepository)
-    await productRepository.create(product)
+    const usecase = new CreateProductUseCase(productRepository)
     const result = await usecase.execute(input)
 
-    expect(result).toEqual(input)
+    expect(result).toEqual({
+      id: expect.any(String),
+      name: input.name,
+      price: input.price
+    })
   })
 })
